@@ -1,0 +1,133 @@
+---
+title: "Untitled"
+output: html_document
+---
+```{r}
+library(Rsubread)
+
+all_bam_file <-list.files(path =  "C:/Users/xinyi7/Dropbox/emily R")
+all_bam_file= sapply(all_bam_file,function(x)  {paste0("C:/Users/xinyi7/Dropbox/emily R/",x)})
+## check proporation of mapping
+## this step takes a lot of time
+propmapped(all_bam_file)
+
+## counts read from all .bam files, which are all using hg19 annotation (same as the reference genome when alignment)
+
+fc_mm10 <- featureCounts(all_bam_file, annot.inbuilt="mm10", isPairedEnd=FALSE)
+
+save(fc_mm10,file="C:/Users/xinyi7/Dropbox/emily R/read_count_mm10.RData")
+
+```
+
+
+```{r}
+#Convert geneId into geneName
+load(file="C:/Users/xinyi7/Dropbox/emily R/read_count_mm10.RData")
+library(org.Mm.eg.db)
+data=fc_mm10$counts
+a=mapIds(org.Mm.eg.db, rownames(data), keytype="ENTREZID", column="SYMBOL", multiVals = "first")
+rownames(data)=a
+```
+
+
+```{r}
+my_counts<-data# data[rownames(data) %in% c('Aim2', 'Foxp3', 'Nlrc3'), ]
+####75-66
+#RNA-seq of WT tTreg precursor and tTreg replicate 1
+#RNA-seq of WT tTreg precursor and tTreg replicate 2
+
+#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 1
+#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 2
+
+#RNA-seq of WT peripheral Treg replicate 1
+#RNA-seq of WT peripheral Treg replicate 2
+
+#RNA-seq of Cd4CreSatb1CKO peripheral Treg replicate 1
+#RNA-seq of Cd4CreSatb1CKO peripheral Treg replicate 2
+
+#RNA-seq of WT Tconv replicate 1
+#RNA-seq of WT Tconv replicate 2
+##66
+my_counts[is.na(my_counts)] <- 0
+
+colnames(my_counts) <-  c( paste0("WT_Tconv", 1:2), paste0("Cd4CreSatb1CKO_peripheral_Treg", 1:2), paste0("WT_peripheral_Treg", 1:2),  paste0("  Cd4CreSatb1CKO_tTreg_precursor_and_tTreg", 1:2),paste0(" WT_tTreg_precursor_and_tTreg", 1:2))
+
+sample_names <- colnames(data)[1:10]  ## make a copy of colomn names before renaming them 
+
+
+sample_info <- data.frame ( condition =sapply(colnames(my_counts),function(x) substr(x,1,(nchar(x)-1))),
+                            row.names = colnames( my_counts) )
+```
+
+```{r}
+library ( DESeq2 )
+#colnames(my_counts) <- NULL
+#rownames(sample_info) <- NULL
+rownames(my_counts)=NULL
+#sample_info$condition=as.character(sample_info$condition)
+ #3.1 generate the DESeqDataSet: with Batch effect added 
+DESeq.ds <- DESeqDataSetFromMatrix ( countData = my_counts,
+                                     colData = sample_info ,
+                                     design = ~condition)
+
+a=a[rowSums( counts(DESeq.ds) ) > 0]
+DESeq.ds <- DESeq.ds[ rowSums( counts(DESeq.ds) ) > 0, ]
+
+# 3.4 calculate the size factor/Dispersions/tests and add it to the data set
+DESeq.ds <- estimateSizeFactors(DESeq.ds)
+DESeq.ds <- estimateDispersions(DESeq.ds)
+DESeq.ds <- nbinomWaldTest(DESeq.ds)
+# sizeFactors(DESeq.ds)
+
+## 3.5 deseq DE analysis restuls: DESeq.ds   
+DESeq.ds <- DESeq(DESeq.ds)
+counts.sf_normalized <- counts(DESeq.ds , normalized = TRUE ) 
+counts_not_normal <- counts(DESeq.ds)
+names(a)=NULL
+rownames(counts.sf_normalized )=a
+rownames(counts_not_normal )=a
+
+
+## 4.3 log tansformed values  
+# transform size - factor normalized read counts to log2 scale using a pseudocount of 1
+log.norm.counts <- log2( counts.sf_normalized + 1) 
+log.not.norm.counts <- log2(counts_not_normal + 1)
+
+## 4.4 obtain regularized log - transformed values
+##  Note: blind = FALSE (use design information) / TRUE (do not use design information) ... 
+DESeq.rlog <- rlog (DESeq.ds , blind = FALSE )  ## this step takes a while ... 
+rlog.norm.counts <- assay (DESeq.rlog )
+rownames(rlog.norm.counts )=a
+```
+
+
+```{r}
+#plot1
+library ( NMF)
+ hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% c('Aim2', 'Foxp3', 'Nlrc3', 'Foxo1', 'Tgfb1', 'Ifng', 'Il10', 'Il17a', 'Il4', 'p65', 'Rel', 'Rela'))  ## rlog.norm.counts[ sig.gene , ]
+pdf("mm10_Heatmap_001.pdf")
+par(mar=c(1,1,1,1))
+aheatmap (hm.mat_sig.gene[,1:10],
+          Rowv = TRUE , Colv = T,
+          distfun = "euclidean", hclustfun = "average",
+          scale = "row") 
+dev.off()
+
+```
+
+
+
+```{r}
+library ( NMF)
+#plot2
+ hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% c('Kdm6b','Kdm5b','Satb1',
+'Tet1','Hdac2','Skp1a','Tdrkh','Cdk1','Aurka','Aurkb','Hmgb3','Ezh2','Uhrf1'))  ## rlog.norm.counts[ sig.gene , ]
+pdf("mm10_Heatmap_002.pdf")
+par(mar=c(1,1,1,1))
+aheatmap (hm.mat_sig.gene[,1:10],
+          Rowv = TRUE , Colv = T,
+          distfun = "euclidean", hclustfun = "average",
+          scale = "row") 
+dev.off()
+
+```
