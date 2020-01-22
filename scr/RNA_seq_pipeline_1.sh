@@ -15,8 +15,8 @@ module load samtools
 for f in  <Run Accessions> #SRR5385266 SRR5385267 
 do
 
-# STAR --genomeDir /pine/scr/x/i/xinyi7/SRAdata/mm10_UCSC_index --runThreadN 12 --readFilesIn ${f}.fastq  --outFileNamePrefix <Output>/${f}.
-# samtools view -bS <Output>/${f}.Aligned.out.sam -o Result_1/${f}.bam
+STAR --genomeDir /pine/scr/x/i/xinyi7/SRAdata/mm10_UCSC_index --runThreadN 12 --readFilesIn ${f}.fastq  --outFileNamePrefix <Output>/${f}.
+samtools view -bS <Output>/${f}.Aligned.out.sam -o Result_1/${f}.bam
 samtools sort -o <Output>/${f}.sorted.bam <Output>/${f}.bam
 
 done
