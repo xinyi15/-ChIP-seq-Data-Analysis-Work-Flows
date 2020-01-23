@@ -22,7 +22,7 @@ save(fc_mm10,file="C:/Users/xinyi7/Dropbox/emily R/read_count_mm10.RData")
 
 ```{r}
 #Convert geneId into geneName
-load(file="C:/Users/xinyi7/Dropbox/emily R/read_count_mm10.RData")
+load(file="C:/Users/xinyi7/Dropbox/Share with Xinyi/Project Emily Zengli/Xinyi's Results/Kitagawa 2017 Natural Immunology/read_count_mm10.RData")
 library(org.Mm.eg.db)
 data=fc_mm10$counts
 a=mapIds(org.Mm.eg.db, rownames(data), keytype="ENTREZID", column="SYMBOL", multiVals = "first")
