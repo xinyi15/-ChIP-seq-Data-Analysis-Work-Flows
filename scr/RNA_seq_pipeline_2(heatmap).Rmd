@@ -103,31 +103,14 @@ rlog.norm.counts <- assay (DESeq.rlog )
 rownames(rlog.norm.counts )=a
 ```
 
-
 ```{r}
-#plot1
-library ( NMF)
- hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% c('Aim2', 'Foxp3', 'Nlrc3', 'Foxo1', 'Tgfb1', 'Ifng', 'Il10', 'Il17a', 'Il4', 'p65', 'Rel', 'Rela'))  ## rlog.norm.counts[ sig.gene , ]
-pdf("mm10_Heatmap_001.pdf")
-par(mar=c(1,1,1,1))
-aheatmap (hm.mat_sig.gene[,1:10],
-          Rowv = TRUE , Colv = T,
-          distfun = "euclidean", hclustfun = "average",
-          scale = "row") 
-dev.off()
-
-```
-
-
-
-```{r}
-library ( NMF)
 #plot2
- hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% c('Kdm6b','Kdm5b','Satb1',
-'Tet1','Hdac2','Skp1a','Tdrkh','Cdk1','Aurka','Aurkb','Hmgb3','Ezh2','Uhrf1'))  ## rlog.norm.counts[ sig.gene , ]
-pdf("mm10_Heatmap_002.pdf")
+ hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% <gene names>) 
+#eg: c('Kdm6b','Kdm5b','Satb1','Tet1','Hdac2','Skp1a','Tdrkh','Cdk1','Aurka','Aurkb','Hmgb3','Ezh2','Uhrf1')
+pdf("<Plot name>.pdf")
 par(mar=c(1,1,1,1))
-aheatmap (hm.mat_sig.gene[,1:10],
+#Input the number of genes
+aheatmap (hm.mat_sig.gene[,1:<numOfgenes>],
           Rowv = TRUE , Colv = T,
           distfun = "euclidean", hclustfun = "average",
           scale = "row") 
