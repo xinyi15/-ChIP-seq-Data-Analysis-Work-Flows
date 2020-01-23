@@ -33,22 +33,24 @@ rownames(data)=a
 
 ```{r}
 my_counts<-data# data[rownames(data) %in% c('Aim2', 'Foxp3', 'Nlrc3'), ]
-####75-66
-#RNA-seq of WT tTreg precursor and tTreg replicate 1
-#RNA-seq of WT tTreg precursor and tTreg replicate 2
+#### eg: examples of sample names
 
-#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 1
-#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 2
-
-#RNA-seq of WT peripheral Treg replicate 1
-#RNA-seq of WT peripheral Treg replicate 2
+#RNA-seq of WT Tconv replicate 1
+#RNA-seq of WT Tconv replicate 2
 
 #RNA-seq of Cd4CreSatb1CKO peripheral Treg replicate 1
 #RNA-seq of Cd4CreSatb1CKO peripheral Treg replicate 2
 
-#RNA-seq of WT Tconv replicate 1
-#RNA-seq of WT Tconv replicate 2
-##66
+#RNA-seq of WT peripheral Treg replicate 1
+#RNA-seq of WT peripheral Treg replicate 2
+
+#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 1
+#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 2
+
+#RNA-seq of WT tTreg precursor and tTreg replicate 1
+#RNA-seq of WT tTreg precursor and tTreg replicate 2
+
+####
 my_counts[is.na(my_counts)] <- 0
 
 colnames(my_counts) <-  c( paste0("WT_Tconv", 1:2), paste0("Cd4CreSatb1CKO_peripheral_Treg", 1:2), paste0("WT_peripheral_Treg", 1:2),  paste0("  Cd4CreSatb1CKO_tTreg_precursor_and_tTreg", 1:2),paste0(" WT_tTreg_precursor_and_tTreg", 1:2))
