@@ -5,17 +5,18 @@ output: html_document
 ```{r}
 library(Rsubread)
 
-all_bam_file <-list.files(path =  "C:/Users/xinyi7/Dropbox/emily R")
-all_bam_file= sapply(all_bam_file,function(x)  {paste0("C:/Users/xinyi7/Dropbox/emily R/",x)})
+all_bam_file <-list.files(path = <Path of folder>) #eg: "C:/Users/Dropbox/"
+all_bam_file= sapply(all_bam_file,function(x)  {paste0(<Path of folder>,x)})  #eg: "C:/Users/Dropbox/"
+
 ## check proporation of mapping
 ## this step takes a lot of time
 propmapped(all_bam_file)
 
-## counts read from all .bam files, which are all using hg19 annotation (same as the reference genome when alignment)
+## counts read from all .bam files, which are all using mm10 annotation (same as the reference genome when alignment)
 
-fc_mm10 <- featureCounts(all_bam_file, annot.inbuilt="mm10", isPairedEnd=FALSE)
+fc_mm10 <- featureCounts(all_bam_file, annot.inbuilt="mm10", isPairedEnd=FALSE) #you can change it to other reference gemone
 
-save(fc_mm10,file="C:/Users/xinyi7/Dropbox/emily R/read_count_mm10.RData")
+save(fc_mm10,file=<Path of file>)#eg:"C:/Users/Dropbox/read_count_mm10.RData"
 
 ```
 
@@ -32,22 +33,24 @@ rownames(data)=a
 
 ```{r}
 my_counts<-data# data[rownames(data) %in% c('Aim2', 'Foxp3', 'Nlrc3'), ]
-####75-66
-#RNA-seq of WT tTreg precursor and tTreg replicate 1
-#RNA-seq of WT tTreg precursor and tTreg replicate 2
+#### eg: examples of sample names
 
-#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 1
-#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 2
-
-#RNA-seq of WT peripheral Treg replicate 1
-#RNA-seq of WT peripheral Treg replicate 2
+#RNA-seq of WT Tconv replicate 1
+#RNA-seq of WT Tconv replicate 2
 
 #RNA-seq of Cd4CreSatb1CKO peripheral Treg replicate 1
 #RNA-seq of Cd4CreSatb1CKO peripheral Treg replicate 2
 
-#RNA-seq of WT Tconv replicate 1
-#RNA-seq of WT Tconv replicate 2
-##66
+#RNA-seq of WT peripheral Treg replicate 1
+#RNA-seq of WT peripheral Treg replicate 2
+
+#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 1
+#RNA-seq of Cd4CreSatb1CKO tTreg precursor and tTreg replicate 2
+
+#RNA-seq of WT tTreg precursor and tTreg replicate 1
+#RNA-seq of WT tTreg precursor and tTreg replicate 2
+
+####
 my_counts[is.na(my_counts)] <- 0
 
 colnames(my_counts) <-  c( paste0("WT_Tconv", 1:2), paste0("Cd4CreSatb1CKO_peripheral_Treg", 1:2), paste0("WT_peripheral_Treg", 1:2),  paste0("  Cd4CreSatb1CKO_tTreg_precursor_and_tTreg", 1:2),paste0(" WT_tTreg_precursor_and_tTreg", 1:2))
@@ -100,31 +103,14 @@ rlog.norm.counts <- assay (DESeq.rlog )
 rownames(rlog.norm.counts )=a
 ```
 
-
 ```{r}
-#plot1
-library ( NMF)
- hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% c('Aim2', 'Foxp3', 'Nlrc3', 'Foxo1', 'Tgfb1', 'Ifng', 'Il10', 'Il17a', 'Il4', 'p65', 'Rel', 'Rela'))  ## rlog.norm.counts[ sig.gene , ]
-pdf("mm10_Heatmap_001.pdf")
-par(mar=c(1,1,1,1))
-aheatmap (hm.mat_sig.gene[,1:10],
-          Rowv = TRUE , Colv = T,
-          distfun = "euclidean", hclustfun = "average",
-          scale = "row") 
-dev.off()
-
-```
-
-
-
-```{r}
-library ( NMF)
 #plot2
- hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% c('Kdm6b','Kdm5b','Satb1',
-'Tet1','Hdac2','Skp1a','Tdrkh','Cdk1','Aurka','Aurkb','Hmgb3','Ezh2','Uhrf1'))  ## rlog.norm.counts[ sig.gene , ]
-pdf("mm10_Heatmap_002.pdf")
+ hm.mat_sig.gene <- subset(rlog.norm.counts, rownames(rlog.norm.counts) %in% <gene names>) 
+#eg: c('Kdm6b','Kdm5b','Satb1','Tet1','Hdac2','Skp1a','Tdrkh','Cdk1','Aurka','Aurkb','Hmgb3','Ezh2','Uhrf1')
+pdf("<Plot name>.pdf")
 par(mar=c(1,1,1,1))
-aheatmap (hm.mat_sig.gene[,1:10],
+#Input the number of genes
+aheatmap (hm.mat_sig.gene[,1:<numOfgenes>],
           Rowv = TRUE , Colv = T,
           distfun = "euclidean", hclustfun = "average",
           scale = "row") 
